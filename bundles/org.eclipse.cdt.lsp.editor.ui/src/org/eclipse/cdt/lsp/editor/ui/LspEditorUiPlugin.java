@@ -15,6 +15,7 @@ package org.eclipse.cdt.lsp.editor.ui;
 
 import org.eclipse.cdt.lsp.editor.ui.clangd.CProjectChangeMonitor;
 import org.eclipse.cdt.lsp.editor.ui.clangd.CompileCommandsMonitor;
+import org.eclipse.cdt.lsp.editor.ui.di.UIModule;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -22,6 +23,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -37,7 +41,9 @@ public class LspEditorUiPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static LspEditorUiPlugin plugin;
-	
+
+	private static Injector injector;
+
 	/**
 	 * The constructor
 	 */
@@ -47,6 +53,9 @@ public class LspEditorUiPlugin extends AbstractUIPlugin {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		
+		injector = Guice.createInjector(new UIModule());
+		
 		plugin = this;
 		ServiceTracker<IWorkspace, IWorkspace> workspaceTracker = new ServiceTracker<>(context, IWorkspace.class, null);
 		workspaceTracker.open();
@@ -72,17 +81,21 @@ public class LspEditorUiPlugin extends AbstractUIPlugin {
 		return plugin;
 	}
 	
+	public static Injector getInjector() {
+		return injector;
+	}
+
 	public IPreferenceStore getLsPreferences() {
 		if (preferenceStore == null) {
 			preferenceStore = new ScopedPreferenceStore(InstanceScope.INSTANCE, LspEditorUiPlugin.PLUGIN_ID);
 		}
 		return preferenceStore;
 	}
-	
+
 	public static void logError(String message, Throwable throwable) {
 		getDefault().getLog().error(message, throwable);
 	}
-	
+
 	public IWorkspace getWorkspace() {
 		return workspace;
 	}

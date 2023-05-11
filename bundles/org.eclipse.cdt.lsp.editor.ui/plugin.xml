@@ -78,7 +78,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="org.eclipse.cdt.lsp.editor.ui.commands.ToggleSourceAndHeaderCommandHandler"
+            class="org.eclipse.cdt.lsp.editor.ui.di.ExtensionFactory:org.eclipse.cdt.lsp.editor.ui.commands.ToggleSourceAndHeaderCommandHandler"
             commandId="org.eclipse.cdt.lsp.editor.ui.toggle_source_and_header">
          <activeWhen>
             	<with variable="activeEditor">
